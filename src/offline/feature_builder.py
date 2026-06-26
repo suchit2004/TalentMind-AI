@@ -2,7 +2,10 @@ import json
 import argparse
 import pandas as pd
 import numpy as np
-from preprocess import clean_skills, parse_date
+try:
+    from src.offline.preprocess import clean_skills, parse_date
+except ModuleNotFoundError:
+    from preprocess import clean_skills, parse_date
 
 # ─── Company DNA Classifications ─────────────────────────────────────────────
 COMPANY_DNA_MAP = {

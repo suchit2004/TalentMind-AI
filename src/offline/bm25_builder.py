@@ -2,7 +2,10 @@ import json
 import argparse
 import pickle
 import re
-from preprocess import build_profile_corpus, simple_tokenize
+try:
+    from src.offline.preprocess import build_profile_corpus, simple_tokenize
+except ModuleNotFoundError:
+    from preprocess import build_profile_corpus, simple_tokenize
 
 def build_bm25_index(candidates_path, output_path):
     print(f"Reading candidates from {candidates_path}...")

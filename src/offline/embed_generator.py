@@ -3,7 +3,10 @@ import argparse
 import os
 import numpy as np
 from sentence_transformers import SentenceTransformer
-from preprocess import build_profile_corpus
+try:
+    from src.offline.preprocess import build_profile_corpus
+except ModuleNotFoundError:
+    from preprocess import build_profile_corpus
 
 def generate_embeddings(candidates_path, output_path, batch_size=256):
     print(f"Loading SentenceTransformer model 'all-MiniLM-L6-v2'...")
