@@ -34,14 +34,21 @@ def generate_embeddings(candidates_path, output_path, batch_size=256):
                 print(f"Read {count} candidates...")
                 
     print(f"Total candidates read: {count}")
-    print("Generating dense embeddings on CPU (this might take a few minutes)...")
+    print("Generating dense embeddings on CPU using multi-process pool (this will utilize all CPU cores)...")
     
+    # Start multi-process pool
+    pool = model.start_multi_process_pool()
+    
+    # Run multi-process encoding
     embeddings = model.encode(
         texts,
+        pool=pool,
         batch_size=batch_size,
-        show_progress_bar=True,
-        convert_to_numpy=True
+        show_progress_bar=True
     )
+    
+    # Stop multi-process pool
+    model.stop_multi_process_pool(pool)
     
     # Cast to float16 to reduce size by half (from float32)
     embeddings_f16 = embeddings.astype(np.float16)
