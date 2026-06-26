@@ -1,4 +1,16 @@
+---
+title: TalentMind AI
+emoji: 🧠
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.35.0
+app_file: app.py
+pinned: false
+---
+
 # TalentMind AI: Candidate Discovery & Ranking Engine
+
 
 Intelligent Candidate Discovery & Ranking Engine built for the **Redrob Hackathon (India Runs Data & AI Challenge)**. 
 
