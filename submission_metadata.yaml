@@ -1,0 +1,62 @@
+# Redrob Hackathon — Submission Metadata
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "TalentMind AI"
+
+primary_contact:
+  name: "Suchit Jundare"
+  email: "suchitjundare03@gmail.com"
+  phone: "+91-XXXXXXXXXX"
+
+team_members:
+  - name: "Suchit Jundare"
+    email: "suchitjundare03@gmail.com"
+    role: "ML Engineer"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/suchit2004/TalentMind-AI"
+sandbox_link: "https://huggingface.co/spaces/suchit2004/redrob-ranker"
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "Local PC"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.12.0"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: true
+  pre_computation_time_minutes: 5
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+ai_tools_used:
+  - "Gemini"
+  - "Cursor"
+
+ai_usage_summary: |
+  Used Gemini for architecture discussions and code review. No candidate data was fed to any external LLMs.
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  A two-phase lexical-semantic ranking pipeline. Offline, we pre-generate dense embeddings using all-MiniLM-L6-v2, construct a BM25 index, and precompute Company DNA & Skill Trust matrices. Online, we apply 5 hard chronological honeypot rules, retrieve the top 800 candidates via hybrid lexical-semantic filtering, score them using a clipped multi-factor weight system, and sort them using a 7-level deterministic tie-breaker. Fully CPU-bound and completes in under 15 seconds.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
