@@ -7,4 +7,3 @@ streamlit>=1.10.0
 plotly>=5.8.0
 pyarrow>=8.0.0
 pyyaml>=6.0
-docx>=0.8.11
