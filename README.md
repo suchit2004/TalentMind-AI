@@ -1,14 +1,3 @@
----
-title: TalentMind AI
-emoji: 🧠
-colorFrom: blue
-colorTo: indigo
-sdk: streamlit
-sdk_version: 1.35.0
-app_file: app.py
-pinned: false
----
-
 # TalentMind AI: Candidate Discovery & Ranking Engine
 
 
@@ -95,13 +84,4 @@ $$\text{Score}_{\text{final}} = \text{Base Score} \cdot \prod \text{clip}(M_{\te
 3. **4-Tier Modular Reasonings:** Generates unique, slot-filled justifications using seeded random variation per candidate, ensuring $100\%$ factual accuracy, zero hallucinations, and high text variation.
 4. **Deterministic Sort & Tie-Break Epsilon:** Implements a 7-level sort chain (Base_Score, S_text, notice, active, resp, github, candidate_id) and applies a tiny epsilon decrement to prevent validator equal-score tie-break issues.
 
----
 
-## 🖥️ Streamlit Recruiter Sandbox
-An interactive recruiter sandbox is provided in `app.py`. Recruiter teams can adjust weights dynamically, view candidate cards with component gauges, inspect duplicate twin flags, and download custom ranks.
-
-Run the dashboard locally:
-```bash
-streamlit run app.py
-```
-This sandbox has been deployed to **HuggingFace Spaces** at [suchit2004/redrob-ranker](https://huggingface.co/spaces/suchit2004/redrob-ranker).
