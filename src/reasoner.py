@@ -122,8 +122,5 @@ def generate_reasoning(cand_row, rank):
         
     # Final length and sanity checks
     reason = reason.strip()
-    # Acknowledge maximum length constraint
-    if len(reason) > 250:
-        reason = reason[:247] + "..."
-        
     return reason
+
