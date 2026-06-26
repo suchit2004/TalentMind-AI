@@ -2,15 +2,7 @@ import json
 import argparse
 import pickle
 import re
-from preprocess import build_profile_corpus
-
-def simple_tokenize(text):
-    """Simple tokenizer to split text into words, lowercase them, and remove non-alphanumeric words."""
-    if not text:
-        return []
-    words = re.findall(r'\b\w+\b', text.lower())
-    # Remove single characters and stop-word like tokens for basic noise reduction
-    return [w for w in words if len(w) > 1]
+from preprocess import build_profile_corpus, simple_tokenize
 
 def build_bm25_index(candidates_path, output_path):
     print(f"Reading candidates from {candidates_path}...")

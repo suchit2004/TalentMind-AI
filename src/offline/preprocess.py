@@ -103,3 +103,12 @@ def build_profile_corpus(candidate):
     # Filter empty strings and join
     corpus = " ".join([p.strip() for p in parts if p and str(p).strip()])
     return corpus
+
+def simple_tokenize(text):
+    """Simple tokenizer to split text into words, lowercase them, and remove non-alphanumeric words."""
+    if not text:
+        return []
+    words = re.findall(r'\b\w+\b', text.lower())
+    # Remove single characters and stop-word like tokens for basic noise reduction
+    return [w for w in words if len(w) > 1]
+
