@@ -213,22 +213,42 @@ def main():
     
     if is_small_sample or not (os.path.exists(embeddings_file) and os.path.exists(bm25_file) and os.path.exists(features_file)):
         print("Precomputed artifacts missing or small dataset detected. Generating features on-the-fly...")
-        # Process on the fly (perfect for Streamlit uploader or local sample check)
-        records = [process_candidate_features(c) for c in candidates]
-        df_features = pd.DataFrame(records)
         
-        # Build BM25 index on the fly
+        # Build BM25 index on the fly for ALL candidates
+        print("Building BM25 index...")
         corpus_tokens = [simple_tokenize(build_profile_corpus(c)) for c in candidates]
         from rank_bm25 import BM25Okapi
         bm25 = BM25Okapi(corpus_tokens)
         
-        # Embed candidates on the fly
+        bm25_index_ids = [c["candidate_id"] for c in candidates]
+        
+        # If it's a large dataset, we retrieve top-2000 lexical candidates first
+        # to avoid embedding 100K profiles on CPU (which takes 30+ minutes).
+        if len(candidates) > 1000:
+            print(f"Large candidate pool ({len(candidates)}). Selecting top 2000 lexical candidates for embedding...")
+            jd_tokens = simple_tokenize(jd_text)
+            bm25_scores = bm25.get_scores(jd_tokens)
+            bm25_score_map = dict(zip(bm25_index_ids, bm25_scores))
+            top_bm25_cids = sorted(bm25_index_ids, key=lambda x: bm25_score_map[x], reverse=True)[:2000]
+            top_bm25_set = set(top_bm25_cids)
+            
+            # Filter candidates list
+            candidates_to_score = [c for c in candidates if c["candidate_id"] in top_bm25_set]
+        else:
+            candidates_to_score = candidates
+            
+        print(f"Generating features and embeddings for {len(candidates_to_score)} candidates...")
+        records = [process_candidate_features(c) for c in candidates_to_score]
+        df_features = pd.DataFrame(records)
+        
+        # Embed only the candidates being scored
         candidate_embeddings = model.encode(
-            [build_profile_corpus(c) for c in candidates],
+            [build_profile_corpus(c) for c in candidates_to_score],
             batch_size=256,
-            convert_to_numpy=True
+            convert_to_numpy=True,
+            show_progress_bar=True
         )
-        candidate_ids = [c["candidate_id"] for c in candidates]
+        candidate_ids = [c["candidate_id"] for c in candidates_to_score]
     else:
         print("Loading precomputed artifacts...")
         # Load embeddings
@@ -240,20 +260,15 @@ def main():
         with open(bm25_file, 'rb') as f:
             bm25_data = pickle.load(f)
             bm25 = bm25_data['bm25']
-            bm25_ids = bm25_data['ids']
+            bm25_index_ids = bm25_data['ids']
             
         # Load features DataFrame
         df_features = pd.read_parquet(features_file)
         
         # Filter artifacts to match only the candidates currently being evaluated
-        # This maps candidate_id to their index in the precomputed files
         valid_cids = {c["candidate_id"] for c in candidates}
-        
-        # Align precomputed files
-        # Map ID -> index
         embed_idx_map = {cid: idx for idx, cid in enumerate(precomputed_ids)}
         
-        # Extract features and embeddings matching valid_cids
         df_features = df_features[df_features["candidate_id"].isin(valid_cids)].copy()
         
         candidate_ids = df_features["candidate_id"].tolist()
@@ -267,20 +282,18 @@ def main():
     jd_tokens = simple_tokenize(jd_text)
     bm25_scores = bm25.get_scores(jd_tokens)
     
-    # Map candidate_id to BM25 score
-    bm25_score_map = dict(zip(candidate_ids, bm25_scores))
+    # Map candidate_id to BM25 score (using correct bm25_index_ids)
+    bm25_score_map = dict(zip(bm25_index_ids, bm25_scores))
     
     # Sort and pick top 2000 lexical candidates
     top_bm25_cids = sorted(candidate_ids, key=lambda x: bm25_score_map[x], reverse=True)[:2000]
     
     # Stage B: Cosine Similarity over candidate embeddings
-    # Compute vector similarities using numpy
     dot_products = np.dot(candidate_embeddings, jd_embedding)
     cand_norms = np.linalg.norm(candidate_embeddings, axis=1)
     jd_norm = np.linalg.norm(jd_embedding)
     cosine_similarities = dot_products / (cand_norms * jd_norm + 1e-8)
     
-    # Map candidate_id to cosine score
     cosine_score_map = dict(zip(candidate_ids, cosine_similarities))
     
     # Sort and pick top 500 dense candidates
