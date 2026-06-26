@@ -176,15 +176,30 @@ def main():
     print(f"Loading candidates from {args.candidates}...")
     candidates = []
     filtered_count = 0
-    with open(args.candidates, 'r', encoding='utf-8') as f:
-        for line in f:
-            if not line.strip():
-                continue
-            cand = json.loads(line)
-            if is_honeypot(cand):
-                filtered_count += 1
-                continue
-            candidates.append(cand)
+    try:
+        with open(args.candidates, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if isinstance(data, list):
+                for cand in data:
+                    if is_honeypot(cand):
+                        filtered_count += 1
+                    else:
+                        candidates.append(cand)
+            else:
+                if is_honeypot(data):
+                    filtered_count += 1
+                else:
+                    candidates.append(data)
+    except json.JSONDecodeError:
+        with open(args.candidates, 'r', encoding='utf-8') as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                cand = json.loads(line)
+                if is_honeypot(cand):
+                    filtered_count += 1
+                else:
+                    candidates.append(cand)
             
     print(f"Loaded {len(candidates)} valid candidates. Filtered out {filtered_count} honeypots.")
     
