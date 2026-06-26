@@ -410,8 +410,8 @@ def main():
     # Take the top 100
     df_submission = df_pool.head(100).copy()
     
-    # Assign ranks 1 to 100
-    df_submission["rank"] = range(1, 101)
+    # Assign ranks
+    df_submission["rank"] = range(1, len(df_submission) + 1)
     
     # Force score monotonicity (non-increasing scores) & unique scores using tiny decrement
     # This guarantees we pass the tie-break validator since scores will be strictly monotonic
