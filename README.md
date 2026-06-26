@@ -55,7 +55,7 @@ TalentMind AI leverages a hybrid lexical-dense retrieval funnel combined with a 
 ### Mathematical Scoring Function
 The core scoring function calculates a candidate's base alignment:
 
-$$\text{Base\_Score} = 0.40 \cdot S_{\text{text}} + 0.25 \cdot S_{\text{exp}} + 0.25 \cdot S_{\text{title}} + 0.10 \cdot S_{\text{loc}}$$
+$$\text{Base Score} = 0.40 \cdot S_{\text{text}} + 0.25 \cdot S_{\text{exp}} + 0.25 \cdot S_{\text{title}} + 0.10 \cdot S_{\text{loc}}$$
 
 * **$S_{\text{text}}$:** Cosine similarity of candidate profile embeddings vs the JD embedding.
 * **$S_{\text{exp}}$:** Gaussian experience fit curve centered at 7 years: $\exp(-0.5 \cdot (\frac{\text{years} - 7}{2.5})^2)$.
@@ -65,14 +65,15 @@ $$\text{Base\_Score} = 0.40 \cdot S_{\text{text}} + 0.25 \cdot S_{\text{exp}} + 
 ### Availability & Risk Multipliers
 The base score is adjusted using clipped multipliers to prioritize active, available, and highly trustable candidates without causing a total score collapse:
 
-$$\text{Score\_final} = \text{Base\_Score} \cdot \prod \text{clip}(M_{\text{risk}}, \text{min}, \text{max})$$
+$$\text{Score}_{\text{final}} = \text{Base Score} \cdot \prod \text{clip}(M_{\text{risk}}, \text{min}, \text{max})$$
 
 * **$M_{\text{notice}}$:** Notice period discount (buyout preference for $\le 30$-day notice).
 * **$M_{\text{recency}}$:** Platform activity recency discount (stale login penalty).
 * **$M_{\text{resp}}$:** Recruiter message responsiveness rate.
 * **$M_{\text{github}}$:** Open-source contribution bonus.
-* **$M_{\text{trust}}$:** Credibility score based on endorsements and skill durations: $\log(1 + \text{endorsements}) \cdot (\frac{\text{duration\_months}}{12})$.
+* **$M_{\text{trust}}$:** Credibility score based on endorsements and skill durations: $\log(1 + \text{endorsements}) \cdot (\frac{\text{duration}_{\text{months}}}{12})$.
 * **$M_{\text{company}}$:** Career trajectory alignment (startup/product weights vs IT services).
+
 
 ---
 
