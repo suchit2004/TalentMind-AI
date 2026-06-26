@@ -1,11 +1,40 @@
 import re
 from datetime import datetime
 
+# Legacy-to-Modern Semantic Alias Dictionary
+SEMANTIC_ALIASES = {
+    "collaborative filtering": "recommendation systems vector search",
+    "item-item cf": "recommendation systems vector search",
+    "apache solr": "dense retrieval neural ir rag",
+    "elasticsearch tuning": "dense retrieval neural ir rag",
+    "hdfs": "distributed ml pipelines spark mllib",
+    "mapreduce": "distributed ml pipelines spark mllib",
+    "pig latin": "distributed ml pipelines spark mllib",
+    "theano": "pytorch tensorflow deep learning",
+    "caffe": "pytorch tensorflow deep learning",
+    "mxnet": "pytorch tensorflow deep learning",
+    "gradient boosted trees": "ml engineering feature engineering",
+    "xgboost": "ml engineering feature engineering",
+}
+
+def expand_aliases(text):
+    """Replace legacy tech terms with modern equivalents to salvage seasoned profiles."""
+    if not text:
+        return ""
+    text_lower = text.lower()
+    for legacy, modern in SEMANTIC_ALIASES.items():
+        if legacy in text_lower:
+            # Replace case-insensitively
+            text_lower = text_lower.replace(legacy, f"{legacy} {modern}")
+    return text_lower
+
 def normalize_text(text):
     """Normalize text by converting to lowercase and stripping whitespace."""
     if not text:
         return ""
-    return str(text).lower().strip()
+    normalized = str(text).lower().strip()
+    return expand_aliases(normalized)
+
 
 def clean_skills(skills_list):
     """Extract and clean names of skills from candidate skills list."""
